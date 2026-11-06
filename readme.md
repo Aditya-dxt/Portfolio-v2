@@ -172,7 +172,7 @@ stateDiagram-v2
 | :--- | :--- |
 | **🏎️ Physics Vehicle Simulation** | Built on **Rapier 3D**, featuring 4-wheel raycast suspension, drift slip physics, dynamic friction coefficients, impact sounds, and ground-skid decal trails. |
 | **🏆 3D Hackathon Pavilion** | Custom 3D wooden kiosk showcasing **6 top hackathons** with high-resolution framed 16:9 graphics, organizer distinctions, team roles, and repository/demo links. |
-| **💻 Software Projects Zone** | 3D billboard kiosk highlighting **8 curated software projects** (SneakerVault, CampusIQ 2.0, Brew & Co., AegisCore AI, MangoAgent IoT, Precedent, GramSetu, Interview AI). |
+| **💻 Software Projects Zone** | 3D billboard kiosk highlighting **curated software projects** (CivicSentinel AI, SneakerVault, CampusIQ, Brew & Co., AegisCore AI, MangoAgent IoT, Precedent, GramSetu, Interview AI). |
 | **📸 Photography Gallery** | 3D framed gallery displaying **15 themed photography albums** with contextual focal cameras and smooth depth-of-field zoom transitions. |
 | **💼 Career Timeline** | 6 career milestones spanning engineering internships, leadership, and startup work, featuring an animated **rolling 7-segment clock display**. |
 | **☀️ Day/Night & Weather Shaders** | Custom **TSL (Three.js Shading Language)** shaders with smooth sun/moon transit, procedural rain droplets, lightning flashes, falling snow, and wind-blown foliage. |

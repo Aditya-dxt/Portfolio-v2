@@ -64,23 +64,6 @@ export default [
         ]
     },
     {
-        title: 'VarshaDrishti',
-        titleSmall: [ 'Varsha', 'Drishti' ],
-        url: 'https://github.com/Aditya-dxt',
-        attributes:
-        {
-            role: [ 'AI Engineer', 'Backend' ],
-            at: 'SIH 2026',
-            with: [ 'ISRO Track', 'Temporal 3D-CNN' ]
-        },
-        distinctions: [ 'fwa' ],
-        images:
-        [
-            'varshadrishti-1.png',
-            'varshadrishti-2.png'
-        ]
-    },
-    {
         title: 'AegisCore AI',
         titleSmall: [ 'Aegis', 'Core AI' ],
         url: 'https://github.com/Aditya-dxt/Aegis__Core_AI',
