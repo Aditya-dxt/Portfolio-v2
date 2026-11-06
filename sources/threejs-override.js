@@ -47,9 +47,19 @@ THREE.Object3D.prototype.copy = function( source, recursive = true )
 
 }
 
+// Ensure InstancedBufferGeometry instanceCount is never Infinity (WebGPU requires finite integer)
+Object.defineProperty(THREE.InstancedBufferGeometry.prototype, 'instanceCount', {
+    get() {
+        return (typeof this._instanceCount === 'number' && Number.isFinite(this._instanceCount)) ? this._instanceCount : 1
+    },
+    set(value) {
+        this._instanceCount = (typeof value === 'number' && Number.isFinite(value) && value >= 0) ? value : 1
+    },
+    configurable: true
+})
+
 // WebGPU Native Validation Guard for Chrome / Edge / WebGPU Browsers
-// Prevents "TypeError: Failed to execute 'drawIndexed' on 'GPURenderPassEncoder': Value is not of type 'unsigned long'"
-// when Three.js passes NaN, Infinity, or uninitialized indices/instances during render passes.
+// Prevents validation errors and crashes when Three.js passes NaN, Infinity, or 0 instances/indices
 if(typeof window !== 'undefined')
 {
     if(typeof GPURenderPassEncoder !== 'undefined' && GPURenderPassEncoder.prototype.drawIndexed)
@@ -58,7 +68,7 @@ if(typeof window !== 'undefined')
         GPURenderPassEncoder.prototype.drawIndexed = function(indexCount, instanceCount = 1, firstIndex = 0, baseVertex = 0, firstInstance = 0)
         {
             if(!Number.isFinite(indexCount) || indexCount <= 0) return
-            if(!Number.isFinite(instanceCount) || instanceCount <= 0) instanceCount = 1
+            if(!Number.isFinite(instanceCount) || instanceCount <= 0) return
             if(!Number.isFinite(firstIndex) || firstIndex < 0) firstIndex = 0
             if(!Number.isFinite(baseVertex)) baseVertex = 0
             if(!Number.isFinite(firstInstance) || firstInstance < 0) firstInstance = 0
@@ -77,7 +87,7 @@ if(typeof window !== 'undefined')
         GPURenderPassEncoder.prototype.draw = function(vertexCount, instanceCount = 1, firstVertex = 0, firstInstance = 0)
         {
             if(!Number.isFinite(vertexCount) || vertexCount <= 0) return
-            if(!Number.isFinite(instanceCount) || instanceCount <= 0) instanceCount = 1
+            if(!Number.isFinite(instanceCount) || instanceCount <= 0) return
             if(!Number.isFinite(firstVertex) || firstVertex < 0) firstVertex = 0
             if(!Number.isFinite(firstInstance) || firstInstance < 0) firstInstance = 0
 
@@ -97,7 +107,7 @@ if(typeof window !== 'undefined')
         GPURenderBundleEncoder.prototype.drawIndexed = function(indexCount, instanceCount = 1, firstIndex = 0, baseVertex = 0, firstInstance = 0)
         {
             if(!Number.isFinite(indexCount) || indexCount <= 0) return
-            if(!Number.isFinite(instanceCount) || instanceCount <= 0) instanceCount = 1
+            if(!Number.isFinite(instanceCount) || instanceCount <= 0) return
             if(!Number.isFinite(firstIndex) || firstIndex < 0) firstIndex = 0
             if(!Number.isFinite(baseVertex)) baseVertex = 0
             if(!Number.isFinite(firstInstance) || firstInstance < 0) firstInstance = 0
@@ -116,7 +126,7 @@ if(typeof window !== 'undefined')
         GPURenderBundleEncoder.prototype.draw = function(vertexCount, instanceCount = 1, firstVertex = 0, firstInstance = 0)
         {
             if(!Number.isFinite(vertexCount) || vertexCount <= 0) return
-            if(!Number.isFinite(instanceCount) || instanceCount <= 0) instanceCount = 1
+            if(!Number.isFinite(instanceCount) || instanceCount <= 0) return
             if(!Number.isFinite(firstVertex) || firstVertex < 0) firstVertex = 0
             if(!Number.isFinite(firstInstance) || firstInstance < 0) firstInstance = 0
 

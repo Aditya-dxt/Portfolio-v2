@@ -9,12 +9,12 @@ export class InstancedGroup
 
         this.references = references
         this.group = group
-        this.count = this.references.length
+        this.count = this.references ? this.references.length : 0
         this.needsUpdate = false
 
         this.setMeshes()
 
-        if(autoUpdate)
+        if(autoUpdate && this.count > 0)
         {
             this.game.ticker.events.on('tick', () =>
             {
@@ -22,12 +22,20 @@ export class InstancedGroup
             }, 13)
         }
         
-        this.update()
+        if(this.count > 0)
+        {
+            this.update()
+        }
     }
 
     setMeshes()
     {
         this.meshes = []
+
+        if(this.count <= 0 || !this.group)
+        {
+            return
+        }
 
         this.group.traverse((_child) =>
         {
@@ -55,6 +63,7 @@ export class InstancedGroup
     static getReferencesFromChildren(children)
     {
         const references = []
+        if(!children) return references
         
         for(const child of children)
         {
@@ -71,6 +80,11 @@ export class InstancedGroup
 
     static getBaseAndReferencesFromInstances(instances)
     {
+        if(!instances || instances.length === 0)
+        {
+            return [ new THREE.Object3D(), [] ]
+        }
+
         // Base
         const base = instances[0].clone()
 
@@ -85,12 +99,16 @@ export class InstancedGroup
 
     updateBoundings()
     {
+        if(this.count <= 0) return
+
         for(const mesh of this.meshes)
             mesh.instance.computeBoundingSphere()
     }
 
     update()
     {
+        if(this.count <= 0) return
+
         let updated = 0
         let i = 0
         for(const _reference of this.references)
