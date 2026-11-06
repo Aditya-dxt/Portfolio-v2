@@ -1,151 +1,306 @@
-# Folio 2025
+<div align="center">
 
-![image info](./static/social/share-image.png)
+# 🏎️ ADITYA DIXIT — 3D INTERACTIVE WEBGPU PORTFOLIO
 
-## Setup
+### *An Immersive 3D Open-World Island & Physics Simulation showcasing Engineering, Hackathons, and Creative Systems.*
 
-Create `.env` file based on `.env.example`
+[![Three.js](https://img.shields.io/badge/Three.js-WebGPU%20%2F%20WebGL2-black?style=for-the-badge&logo=three.js)](https://threejs.org/)
+[![Physics](https://img.shields.io/badge/Physics-Rapier%203D-orange?style=for-the-badge)](https://rapier.rs/)
+[![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![GSAP](https://img.shields.io/badge/Animation-GSAP-88CE02?style=for-the-badge&logo=greensock&logoColor=white)](https://greensock.com/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Aditya--dxt%2FPortfolio--v2-181717?style=for-the-badge&logo=github)](https://github.com/Aditya-dxt/Portfolio-v2)
 
-Download and install [Node.js](https://nodejs.org/en/download/) then run this followed commands:
+<br/>
 
-``` bash
-# Install dependencies
-npm install --force
+[✨ Live Demo](https://adityadixit.vercel.app/) • [🚀 Features](#-key-features) • [📐 Architecture & Views](#-system-architecture--diagram-views) • [🎮 Controls](#-controls-guide) • [🛠️ Tech Stack](#-technology-stack) • [📦 Setup & Run](#-local-installation--setup) • [🌐 Deployment](#-production-deployment)
 
-# Serve at localhost:1234
-npm run dev
+<br/>
 
-# Build for production in the dist/ directory
-npm run build
+![Folio Hero Banner](./static/social/share-image.png)
+
+</div>
+
+---
+
+## 🌟 Overview
+
+**Portfolio-v2** is an interactive, gamified 3D portfolio experience built with **Three.js**, **WebGPU Node Shaders (TSL)**, and **Rapier 3D Physics**. Rather than browsing a standard static webpage, visitors pilot a responsive physics-simulated sports buggy across a handcrafted low-poly archipelago. 
+
+As you navigate through dynamic terrain, real-time day/night cycles, and atmospheric weather simulations, you discover interactive 3D pavilions and kiosks spotlighting software engineering projects, hackathon achievements, career milestones, photography exhibitions, and interactive mini-games.
+
+---
+
+## 📐 System Architecture & Diagram Views
+
+Below are visual architecture and engineering views diagrammed with **Mermaid** representing the core subsystems, runtime game loop, world spatial layout, and state machine transitions.
+
+### 1. High-Level Engine Architecture View
+```mermaid
+flowchart TD
+    subgraph Browser ["🌐 Client Browser & Hardware"]
+        Screen["Display Canvas (WebGPU / WebGL2)"]
+        AudioOut["WebAudio API (Positional & Engine SFX)"]
+        Inputs["Hardware Inputs: Keyboard / Gamepad / Touch"]
+    end
+
+    subgraph CoreEngine ["⚡ Core 3D & Physics Engine"]
+        Loop["Tick / Game Loop Engine"]
+        InputMgr["Input Controller & Action Mapper"]
+        Physics["Rapier 3D Compat Engine"]
+        Renderer["Three.js WebGPU / WebGL Renderer"]
+        TSL["Node Material Shader System (TSL)"]
+    end
+
+    subgraph WorldAreas ["🏝️ Procedural Island & Interactive Areas"]
+        HeroArea["Landing Zone: 3D Beveled Letters"]
+        CareerArea["Career Timeline: 6-Track Path & 7-Segment Clock"]
+        ProjectsArea["Projects Kiosk: 8 Curated Software Showcases"]
+        HackathonsArea["Hackathons Hub: 6 Competitive 3D Showcases"]
+        PhotoArea["Photography Pavilion: 15 Framed Exhibits"]
+        GamesArea["Mini-Games: Bowling & Off-road Circuit"]
+    end
+
+    subgraph Environment ["🌦️ Atmosphere & Environment Systems"]
+        DayNight["Dynamic Day & Night Light Cycles"]
+        Weather["Weather Controller: Rain, Snow & Fog"]
+        Terrain["Procedural Low-Poly Terrain & Water Surface"]
+        Particles["Foliage, Leaves, Trails & Wind Dynamics"]
+    end
+
+    subgraph UI ["🖥️ Glassmorphic HUD & Navigation"]
+        HUD["Day/Night Toggle, Mute & Quality Controls"]
+        MiniMap["2D Radar Map & Fast-Travel Teleportation"]
+        ModalKiosk["Interactive 3D Focus View & Modal Panels"]
+    end
+
+    Inputs --> InputMgr
+    InputMgr --> Loop
+    Loop --> Physics
+    Physics --> WorldAreas
+    Loop --> Environment
+    Environment --> Renderer
+    WorldAreas --> Renderer
+    TSL --> Renderer
+    Renderer --> Screen
+    Loop --> AudioOut
+    MiniMap -. Fast Travel .-> Physics
+    WorldAreas --> ModalKiosk
 ```
 
-## Game loop
+---
 
-#### 0
+### 2. World Layout & Spatial Navigation View
+```mermaid
+flowchart LR
+    Landing["🏁 Landing Zone<br/>(3D ADITYA DIXIT Letters)"]
+    
+    Landing -->|"Drive North-East"| Career["💼 Career Milestones<br/>(Timeline & 7-Segment Counter)"]
+    Landing -->|"Drive North"| Projects["💻 Software Projects<br/>(Interactive 8-Project Kiosk)"]
+    Landing -->|"Drive East"| Hackathons["🏆 Hackathons Pavilion<br/>(6 International & National Wins)"]
+    Landing -->|"Drive South-East"| Photography["📸 Photo Exhibition<br/>(15 Framed Albums)"]
+    Landing -->|"Drive South"| Circuit["🏁 Mini-Games & Track<br/>(Bowling Alley & Off-road Course)"]
+    Landing -->|"Drive West"| Social["🌐 Social Outpost<br/>(GitHub, LinkedIn, Mail)"]
 
-- Time
-- Inputs
+    Minimap["🗺️ Glass Island Radar"] -. Teleport Any Area .-> Projects
+    Minimap -. Teleport Any Area .-> Hackathons
+    Minimap -. Teleport Any Area .-> Career
+    Minimap -. Teleport Any Area .-> Photography
+    Minimap -. Teleport Any Area .-> Circuit
+```
 
-#### 1
+---
 
-- Player:pre-physics (Inputs)
+### 3. Step-by-Step Physics & Render Loop View
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Driver (User)
+    participant Input as Input Manager
+    participant Vehicle as Physical Vehicle (Raycast)
+    participant Rapier as Rapier 3D Engine
+    participant Visual as Visual Vehicle & Particles
+    participant Shaders as TSL / Environment Shaders
+    participant Render as Three.js WebGPU Renderer
 
-#### 2
+    User->>Input: KeyDown / Joystick / Touch (W, A, S, D, Space)
+    Input->>Vehicle: Pre-physics Dispatch (Steering, Engine Torque, Handbrake)
+    Vehicle->>Rapier: Step World & Raycast Wheel Suspensions
+    Rapier-->>Vehicle: RigidBody Translation, Linear & Angular Velocities
+    Vehicle->>Visual: Sync Visual Chassis, Wheel Rotations & Suspension Struts
+    Visual->>Visual: Generate Tire Skid Marks, Smoke & Particle Dust
+    Shaders->>Shaders: Update Sun Position, Foliage Sway & Water Normals
+    Visual->>Render: Pass Camera Targets, Matrix World & Depth Buffer
+    Render-->>User: Present 60+ FPS Frame to Display Screen
+```
 
-- PhysicalVehicle:pre-physics (Player:pre-physics)
+---
 
-#### 3
+### 4. Interactive Kiosk & State Machine View
+```mermaid
+stateDiagram-v2
+    [*] --> InitialLoading: Asset Preload & Shader Compile
+    InitialLoading --> Step0_RevealRing: Distance Clamped to Origin
+    Step0_RevealRing --> Step1_Shockwave: User Clicks Start / Presses Key
+    Step1_Shockwave --> FreeRoam: Camera Unlatches & Car Drops onto Island
 
-- Physics
+    state FreeRoam {
+        [*] --> Driving
+        Driving --> Drifting: Spacebar / Handbrake
+        Drifting --> Driving: Releasing Brake
+        Driving --> FastTravel: Select Target on 2D Radar Map
+        FastTravel --> Driving: Vehicle Drops at Destination
+    }
 
-#### 4
+    FreeRoam --> ApproachingKiosk: Enter Trigger Proximity Zone
+    ApproachingKiosk --> ModalActive: Press Enter / Click Focus Button
+    
+    state ModalActive {
+        [*] --> InspectingProject
+        InspectingProject --> InspectingProject: Next / Prev Project Carousel
+        InspectingProject --> ExternalLink: Open GitHub / Live Demo
+    }
 
-- PhysicsWireframe (Physics)
-- Objects (Physics)
+    ModalActive --> FreeRoam: Press ESC / Click Close Badge
+```
 
-#### 5
+---
 
-- PhysicalVehicle:post-physics (Player:pre-physics)
+## 🚀 Key Features
 
-#### 6
+| Category | Highlights & Capabilities |
+| :--- | :--- |
+| **🏎️ Physics Vehicle Simulation** | Built on **Rapier 3D**, featuring 4-wheel raycast suspension, drift slip physics, dynamic friction coefficients, impact sounds, and ground-skid decal trails. |
+| **🏆 3D Hackathon Pavilion** | Custom 3D wooden kiosk showcasing **6 top hackathons** with high-resolution framed 16:9 graphics, organizer distinctions, team roles, and repository/demo links. |
+| **💻 Software Projects Zone** | 3D billboard kiosk highlighting **8 curated software projects** (SneakerVault, CampusIQ 2.0, Brew & Co., AegisCore AI, MangoAgent IoT, Precedent, GramSetu, Interview AI). |
+| **📸 Photography Gallery** | 3D framed gallery displaying **15 themed photography albums** with contextual focal cameras and smooth depth-of-field zoom transitions. |
+| **💼 Career Timeline** | 6 career milestones spanning engineering internships, leadership, and startup work, featuring an animated **rolling 7-segment clock display**. |
+| **☀️ Day/Night & Weather Shaders** | Custom **TSL (Three.js Shading Language)** shaders with smooth sun/moon transit, procedural rain droplets, lightning flashes, falling snow, and wind-blown foliage. |
+| **🗺️ 2D Island Radar & Fast Travel** | Glassmorphism radar map rendered with top-down island topography, dynamic player heading indicator, and click-to-teleport capabilities. |
+| **🎵 Interactive WebAudio Engine** | Synthesized vehicle engine revs, gear shifts, tire squeals, environmental wind ambient, and physical impact audio nodes. |
 
-- Player:post-physics (Physics, PhysicalVehicle:post-physics)
+---
 
-#### 7
+## 🏆 Featured Hackathons in 3D Pavilion
 
-- View (Inputs, Player:post-physics)
+1. **India Innovates 2026** — *National Smart Automation Series* | **1st Prize Winner** (`National Winner`)
+2. **FAR AWAY 2026** — *Zuup Labs International Series* | **Semi-Finalist** (`New Delhi to Tokyo Prototype`)
+3. **iQOO Hackathon 2026** — *Hardware Acceleration & Mobile Gaming Challenge* | **Finalist & Merit Award**
+4. **Green Bharat Hackathon 2026** — *Ministry of Electronics & IT (MeitY)* | **Top 5 Nationwide**
+5. **AVEVA Hackathon 2025** — *AVEVA Industrial AI & Digital Twin Challenge* | **Finalist — Industrial Innovation**
+6. **Technex '25 Hackathon** — *IIT Varanasi (BHU) Annual Technical Championship* | **Winner — Most Innovative Solution**
 
-#### 8
+---
 
-- Intro
-- DayCycles
-- YearCycles
-- Weather (DayCycles, YearCycles)
-- Zones (Player:post-physics)
-- VisualVehicle (PhysicalVehicle:post-physics, Inputs, Player:post-physics, View)
+## 🎮 Controls Guide
 
-#### 9
+| Action | Keyboard | Gamepad | Mobile Touch |
+| :--- | :--- | :--- | :--- |
+| **Accelerate** | `W` or `↑` | Right Trigger (`R2` / `RT`) | On-screen Accelerate Button |
+| **Reverse / Brake** | `S` or `↓` | Left Trigger (`L2` / `LT`) | On-screen Brake Button |
+| **Steer Left / Right** | `A` / `D` or `←` / `→` | Left Analog Stick | On-screen Steering Wheel |
+| **Handbrake / Drift** | `Space` | `A` or `X` Button | Drift Icon |
+| **Reset Vehicle Position** | `R` | `Y` Button / Select | Reset Badge |
+| **Toggle Day / Night** | `N` or Header Button | D-Pad Up | Sun/Moon Header Toggle |
+| **Toggle Island Radar** | `M` or Radar Button | D-Pad Down | Minimap Radar Icon |
+| **Inspect / Enter Kiosk** | `Enter` | `A` Button | Enter Button |
+| **Exit Kiosk / Close Modal**| `Escape` | `B` Button | Close [X] Button |
 
-- Wind (Weather)
-- Lighting (DayCycles, View)
-- Tornado (DayCycles, PhysicalVehicle)
-- InteractivePoints (Player:post-physics)
-- Tracks (VisualVehicle)
+---
 
-#### 10
+## 🛠️ Technology Stack
 
-- Area++ (View, PhysicalVehicle:post-physics, Player:post-physics, Wind)
-- Foliage (VisualVehicle, View)
-- Fog (View)
-- Reveal (DayCycles)
-- Terrain (Tracks)
-- Trails (PhysicalVehicle)
-- Floor (View)
-- Grass (View, Wind)
-- Leaves (View, PhysicalVehicle)
-- Lightnings (View, Weather)
-- RainLines (View, Weather, Reveal)
-- Snow (View, Weather, Reveal, Tracks)
-- VisualTornado (Tornado)
-- WaterSurface (Weather, View)
-- Benches (Objects)
-- Bricks (Objects)
-- ExplosiveCrates (Objects)
-- Fences (Objects)
-- Lanterns (Objects)
-- Whispers (Player)
+```
+Portfolio-v2 Core Stack
+├── Graphics Engine    : Three.js (r160+), TSL (Three.js Shading Language)
+├── Physics Engine     : @dimforge/rapier3d-compat (WebAssembly 3D Physics)
+├── Build & Dev Server : Vite 5, Node.js 18+
+├── Animation Library  : GSAP (GreenSock Animation Platform)
+├── Asset Pipeline     : glTF-Transform, KTX2, Basis Universal Texture Compressor
+├── Styles & UI        : Stylus, Glassmorphism CSS, Responsive SVG Vectors
+├── Sound Design       : Native WebAudio API Synthesizer & Spatial Nodes
+└── Deployment Target  : Vercel / Netlify / Cloudflare Pages
+```
 
-#### 13
+---
 
-- InstancedGroup (Objects, [SpecificObjects])
+## 📦 Local Installation & Setup
 
-#### 14
+### Prerequisites
+- [Node.js](https://nodejs.org/) (version `18.x` or higher recommended)
+- `npm` or `pnpm`
 
-- Audio (View, Objects)
-- Notifications
-- Title (PhysicalVehicle:post-physics)
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/Aditya-dxt/Portfolio-v2.git
+cd Portfolio-v2
+```
 
-#### 998
+### Step 2: Install Dependencies
+```bash
+npm install --force
+```
 
-- Rendering
+### Step 3: Run Local Development Server
+```bash
+npm run dev
+```
+Open your browser and navigate to `http://localhost:5173`.
 
-#### 999
+### Step 4: Build for Production
+```bash
+npm run build
+```
+Production assets are generated in the `dist/` directory, optimized with asset hashing and chunking.
 
-- Monitoring
+---
 
-## Blender
+## 🌐 Production Deployment
 
-### Export
+### Option A: Deploy to Vercel (Recommended)
+This repository includes a production-ready `vercel.json` configuration file:
+1. Push your code to your GitHub repository.
+2. Visit [Vercel](https://vercel.com/) and click **"Add New Project"**.
+3. Import `Aditya-dxt/Portfolio-v2`.
+4. Leave framework settings as **Vite** (Build: `npm run build`, Output: `dist`).
+5. Click **Deploy**.
 
-- Mute the palette texture node (loaded and set in Three.js `Material` directly)
-- Use corresponding export presets
-- Don't use compression (will be done later)
+### Option B: Deploy to Netlify
+A configured `netlify.toml` file is provided:
+1. Connect your repository on [Netlify](https://www.netlify.com/).
+2. Netlify will auto-detect:
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `dist`
+3. Click **Deploy Site**.
 
-### Compress
+---
 
-Run `npm run compress`
+## 🗜️ 3D Asset Compression Pipeline
 
-Will do the following
+To ensure sub-2-second load times on mobile and low-bandwidth connections, 3D assets and textures are compressed with ETC1S / KTX2:
 
-#### GLB
+```bash
+# Compress all GLB models and textures in the static directory
+npm run compress
+```
 
-- Traverses the `static/` folder looking for glb files (ignoring already compressed files)
-- Compresses embeded texture with `etc1s --quality 255` (lossy, GPU friendly)
-- Generates new files to preserve originals
+This pipeline:
+- Scans `static/` for uncompressed `.glb` meshes and compresses embedded textures with `etc1s`.
+- Traverses image textures and re-encodes to GPU-ready KTX2/Basis formats.
+- Converts UI raster graphics to modern lightweight WebP formats.
 
-#### Texture files
+---
 
-- Traverses the `static/` folder looking for `png|jpg` files (ignoring non-model related folders)
-- Compresses with default preset to `--encode etc1s --qlevel 255` (lossy, GPU friendly) or specific preset according to path
-- Generates new files to preserve originals
+## 👤 Author & Contact
 
-#### UI files
+**Aditya Dixit**
+- 🌐 **Portfolio**: [adityadixit.vercel.app](https://adityadixit.vercel.app/)
+- 💻 **GitHub**: [@Aditya-dxt](https://github.com/Aditya-dxt)
+- 💼 **LinkedIn**: [Aditya Dixit](https://linkedin.com/in/aditya-dxt)
+- 📧 **Email**: [adityadxt1910@gmail.com](mailto:adityadxt1910@gmail.com)
 
-- Traverses the `static/ui.` folder looking for `png|jpg` files
-- Compresses to WebP
+---
 
-#### Resources
+## 📄 License
 
-- https://gltf-transform.dev/cli
-- https://github.com/KhronosGroup/KTX-Software?tab=readme-ov-file
-- https://github.khronos.org/KTX-Software/ktxtools/toktx.html
+This project is licensed under the [MIT License](LICENSE) — feel free to explore, learn, and build upon it!
