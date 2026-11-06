@@ -17,7 +17,7 @@
 
 <br/>
 
-![Folio Hero Banner](./static/social/share-image.png)
+<!-- Add your new hero banner image here: ![Portfolio Banner](./path-to-image.png) -->
 
 </div>
 
