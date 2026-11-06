@@ -46,3 +46,87 @@ THREE.Object3D.prototype.copy = function( source, recursive = true )
     return this;
 
 }
+
+// WebGPU Native Validation Guard for Chrome / Edge / WebGPU Browsers
+// Prevents "TypeError: Failed to execute 'drawIndexed' on 'GPURenderPassEncoder': Value is not of type 'unsigned long'"
+// when Three.js passes NaN, Infinity, or uninitialized indices/instances during render passes.
+if(typeof window !== 'undefined')
+{
+    if(typeof GPURenderPassEncoder !== 'undefined' && GPURenderPassEncoder.prototype.drawIndexed)
+    {
+        const origDrawIndexed = GPURenderPassEncoder.prototype.drawIndexed
+        GPURenderPassEncoder.prototype.drawIndexed = function(indexCount, instanceCount = 1, firstIndex = 0, baseVertex = 0, firstInstance = 0)
+        {
+            if(!Number.isFinite(indexCount) || indexCount <= 0) return
+            if(!Number.isFinite(instanceCount) || instanceCount <= 0) instanceCount = 1
+            if(!Number.isFinite(firstIndex) || firstIndex < 0) firstIndex = 0
+            if(!Number.isFinite(baseVertex)) baseVertex = 0
+            if(!Number.isFinite(firstInstance) || firstInstance < 0) firstInstance = 0
+
+            return origDrawIndexed.call(
+                this,
+                Math.floor(indexCount),
+                Math.floor(instanceCount),
+                Math.floor(firstIndex),
+                Math.floor(baseVertex),
+                Math.floor(firstInstance)
+            )
+        }
+
+        const origDraw = GPURenderPassEncoder.prototype.draw
+        GPURenderPassEncoder.prototype.draw = function(vertexCount, instanceCount = 1, firstVertex = 0, firstInstance = 0)
+        {
+            if(!Number.isFinite(vertexCount) || vertexCount <= 0) return
+            if(!Number.isFinite(instanceCount) || instanceCount <= 0) instanceCount = 1
+            if(!Number.isFinite(firstVertex) || firstVertex < 0) firstVertex = 0
+            if(!Number.isFinite(firstInstance) || firstInstance < 0) firstInstance = 0
+
+            return origDraw.call(
+                this,
+                Math.floor(vertexCount),
+                Math.floor(instanceCount),
+                Math.floor(firstVertex),
+                Math.floor(firstInstance)
+            )
+        }
+    }
+
+    if(typeof GPURenderBundleEncoder !== 'undefined' && GPURenderBundleEncoder.prototype.drawIndexed)
+    {
+        const origBundleDrawIndexed = GPURenderBundleEncoder.prototype.drawIndexed
+        GPURenderBundleEncoder.prototype.drawIndexed = function(indexCount, instanceCount = 1, firstIndex = 0, baseVertex = 0, firstInstance = 0)
+        {
+            if(!Number.isFinite(indexCount) || indexCount <= 0) return
+            if(!Number.isFinite(instanceCount) || instanceCount <= 0) instanceCount = 1
+            if(!Number.isFinite(firstIndex) || firstIndex < 0) firstIndex = 0
+            if(!Number.isFinite(baseVertex)) baseVertex = 0
+            if(!Number.isFinite(firstInstance) || firstInstance < 0) firstInstance = 0
+
+            return origBundleDrawIndexed.call(
+                this,
+                Math.floor(indexCount),
+                Math.floor(instanceCount),
+                Math.floor(firstIndex),
+                Math.floor(baseVertex),
+                Math.floor(firstInstance)
+            )
+        }
+
+        const origBundleDraw = GPURenderBundleEncoder.prototype.draw
+        GPURenderBundleEncoder.prototype.draw = function(vertexCount, instanceCount = 1, firstVertex = 0, firstInstance = 0)
+        {
+            if(!Number.isFinite(vertexCount) || vertexCount <= 0) return
+            if(!Number.isFinite(instanceCount) || instanceCount <= 0) instanceCount = 1
+            if(!Number.isFinite(firstVertex) || firstVertex < 0) firstVertex = 0
+            if(!Number.isFinite(firstInstance) || firstInstance < 0) firstInstance = 0
+
+            return origBundleDraw.call(
+                this,
+                Math.floor(vertexCount),
+                Math.floor(instanceCount),
+                Math.floor(firstVertex),
+                Math.floor(firstInstance)
+            )
+        }
+    }
+}

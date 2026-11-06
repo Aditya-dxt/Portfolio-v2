@@ -37,38 +37,58 @@ export class Rendering
 
     async setRenderer()
     {
-        this.renderer = new THREE.WebGPURenderer({
-            canvas: this.game.canvasElement,
-            powerPreference: 'high-performance',
-            forceWebGL: false,
-            antialias: this.game.viewport.pixelRatio < 2
-        })
-        this.renderer.setSize(this.game.viewport.width, this.game.viewport.height)
-        this.renderer.setPixelRatio(this.game.viewport.pixelRatio)
-        this.renderer.sortObjects = false
+        const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+        const forceWebGL = urlParams ? urlParams.has('webgl') : false
 
-        this.renderer.domElement.classList.add('experience')
-        this.renderer.shadowMap.enabled = true
-        // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-        this.renderer.setOpaqueSort((a, b) =>
+        const createRenderer = (webglMode) =>
         {
-            return a.renderOrder - b.renderOrder
-        })
-        this.renderer.setTransparentSort((a, b) =>
-        {
-            return a.renderOrder - b.renderOrder
-        })
+            const renderer = new THREE.WebGPURenderer({
+                canvas: this.game.canvasElement,
+                powerPreference: 'high-performance',
+                forceWebGL: webglMode,
+                antialias: this.game.viewport.pixelRatio < 2
+            })
+            renderer.setSize(this.game.viewport.width, this.game.viewport.height)
+            renderer.setPixelRatio(this.game.viewport.pixelRatio)
+            renderer.sortObjects = false
 
-        if(location.hash.match(/inspector/i))
-        {
-            this.renderer.inspector = new Inspector()
+            renderer.domElement.classList.add('experience')
+            renderer.shadowMap.enabled = true
+            // renderer.shadowMap.type = THREE.PCFSoftShadowMap
+            renderer.setOpaqueSort((a, b) =>
+            {
+                return a.renderOrder - b.renderOrder
+            })
+            renderer.setTransparentSort((a, b) =>
+            {
+                return a.renderOrder - b.renderOrder
+            })
+
+            if(location.hash.match(/inspector/i))
+            {
+                renderer.inspector = new Inspector()
+            }
+
+            // Make the renderer control the ticker
+            renderer.setAnimationLoop((elapsedTime) => { this.game.ticker.update(elapsedTime) })
+
+            return renderer
         }
 
-        // Make the renderer control the ticker
-        this.renderer.setAnimationLoop((elapsedTime) => { this.game.ticker.update(elapsedTime) })
+        this.renderer = createRenderer(forceWebGL)
+
+        try
+        {
+            await this.renderer.init()
+        }
+        catch(error)
+        {
+            console.warn('WebGPU init failed, falling back to WebGL2 backend:', error)
+            this.renderer = createRenderer(true)
+            await this.renderer.init()
+        }
 
         return this.renderer
-            .init()
     }
 
     setPostprocessing()
