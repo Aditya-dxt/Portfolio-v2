@@ -1,12 +1,29 @@
 export default [
     {
+        title: 'CivicSentinel AI',
+        titleSmall: [ 'Civic', 'Sentinel' ],
+        url: 'https://civicsentinel-admin.onrender.com',
+        attributes:
+        {
+            role: [ 'Team Leader', 'Full-Stack' ],
+            at: 'Bharat Mandapam',
+            with: [ 'India Innovates 2026', 'Finalist' ]
+        },
+        distinctions: [ 'awwwards', 'fwa' ],
+        images:
+        [
+            'civicsentinel-1.png',
+            'civicsentinel-2.png'
+        ]
+    },
+    {
         title: 'SneakerVault',
         titleSmall: [ 'Sneaker', 'Vault' ],
         url: 'https://sneakervault-india.vercel.app',
         attributes:
         {
             role: 'MERN Developer',
-            at: 'Production',
+            at: 'Production Live',
             with: [ 'Stripe Payments', 'MongoDB' ]
         },
         distinctions: [ 'awwwards' ],
@@ -45,6 +62,23 @@ export default [
         images:
         [
             'brewandco-1.png'
+        ]
+    },
+    {
+        title: 'VarshaDrishti',
+        titleSmall: [ 'Varsha', 'Drishti' ],
+        url: 'https://github.com/Aditya-dxt',
+        attributes:
+        {
+            role: [ 'AI Engineer', 'Backend' ],
+            at: 'SIH 2026',
+            with: [ 'ISRO Track', 'Temporal 3D-CNN' ]
+        },
+        distinctions: [ 'fwa' ],
+        images:
+        [
+            'varshadrishti-1.png',
+            'varshadrishti-2.png'
         ]
     },
     {
@@ -118,7 +152,7 @@ export default [
         attributes:
         {
             role: [ 'AI Product', 'Developer' ],
-            at: 'Production',
+            at: 'Production Live',
             with: [ 'OpenAI & Gemini', 'Real-Time' ]
         },
         distinctions: [ 'awwwards' ],
