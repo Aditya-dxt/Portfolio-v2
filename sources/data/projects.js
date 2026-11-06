@@ -12,8 +12,7 @@ export default [
         distinctions: [ 'awwwards', 'fwa' ],
         images:
         [
-            'civicsentinel-1.png',
-            'civicsentinel-2.png'
+            'civicsentinel-1.png'
         ]
     },
     {
